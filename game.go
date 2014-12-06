@@ -1,20 +1,45 @@
+// author: Jacky Boen
+
 package main
 
-import "github.com/veandco/go-sdl2/sdl"
+import (
+	"fmt"
+	"github.com/veandco/go-sdl2/sdl"
+	"os"
+)
+
+var winTitle string = "Go-SDL2 Render"
+var winWidth, winHeight int = 800, 600
 
 func main() {
-    window, err := sdl.CreateWindow("test", sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
-        800, 600, sdl.WINDOW_SHOWN)
-    if err != nil {
-        panic(err)
-    }
+	var window *sdl.Window
+	var renderer *sdl.Renderer
+	var rect sdl.Rect
 
-    surface := window.GetSurface()
+	window, err := sdl.CreateWindow(winTitle, sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED,
+		winWidth, winHeight, sdl.WINDOW_SHOWN)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to create window: %s\n", err)
+		os.Exit(1)
+	}
 
-    rect := sdl.Rect{0, 0, 200, 200}
-    surface.FillRect(&rect, 0xffff0000)
-    window.UpdateSurface()
+	renderer, err = sdl.CreateRenderer(window, -1, sdl.RENDERER_ACCELERATED)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to create renderer: %s\n", err)
+		os.Exit(2)
+	}
+	renderer.Clear()
 
-    sdl.Delay(1000)
-    window.Destroy()
+	rect = sdl.Rect{0, 0, int32(winWidth), int32(winHeight)}
+	for red := 0; red < 256; red++ {
+		renderer.SetDrawColor(uint8(red), uint8(red), uint8(red), 255)
+		renderer.FillRect(&rect)
+
+		renderer.Present()
+
+		sdl.Delay(15)
+
+	}
+	renderer.Destroy()
+	window.Destroy()
 }
