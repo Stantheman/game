@@ -4,6 +4,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/Stantheman/game/sound"
 	"github.com/veandco/go-sdl2/sdl"
 	"os"
 )
@@ -29,6 +30,15 @@ func main() {
 		os.Exit(2)
 	}
 	renderer.Clear()
+	s, err := sound.Init()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to initialize sound: %v\n", err)
+		os.Exit(3)
+	}
+	if err := s.Beep(); err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to beep: %v\n", err)
+		os.Exit(4)
+	}
 
 	rect = sdl.Rect{0, 0, int32(winWidth), int32(winHeight)}
 	for red := 0; red < 256; red++ {
