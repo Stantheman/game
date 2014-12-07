@@ -5,7 +5,7 @@ package main
 import (
 	"fmt"
 	"github.com/Stantheman/game/sound"
-	"github.com/veandco/go-sdl2/sdl"
+	"github.com/Stantheman/go-sdl2/sdl"
 	"os"
 )
 

@@ -3,7 +3,7 @@ package sound
 import (
 	"errors"
 	"fmt"
-	"github.com/veandco/go-sdl2/sdl"
+	"github.com/Stantheman/go-sdl2/sdl"
 	"unsafe"
 )
 
@@ -27,20 +27,40 @@ func (s *SoundManager) Beep() error {
 
 	f := callback
 	fp := unsafe.Pointer(&f)
+	fmt.Printf("pointer f is %p\npointer fp is %p\n", f, fp)
+	thing := sdl.AudioCallback(fp)
+	fmt.Printf("pointer thing is %p\n", thing)
 
 	audioSpec.Callback = sdl.AudioCallback(fp)
+	printAudio(audioSpec)
+
+	count := sdl.GetNumAudioDevices(0)
+	for i := 0; i < count; i++ {
+		fmt.Printf("%v: %v\n", i, sdl.GetAudioDeviceName(i, 0))
+	}
 
 	resultSpec := new(sdl.AudioSpec)
-	if ret := sdl.OpenAudioDevice("", 0, audioSpec, resultSpec, sdl.AUDIO_ALLOW_ANY_CHANGE); ret != 0 {
+	if ret := sdl.OpenAudioDevice("Buisdft", 0, audioSpec, resultSpec, sdl.AUDIO_ALLOW_ANY_CHANGE); ret != 0 {
 		return fmt.Errorf("Couldn't initialize audio device: returned %v", ret)
 	}
 
+	printAudio(resultSpec)
 	sdl.PauseAudio(0)
+	sdl.Delay(5000)
+	sdl.LockAudio()
+	sdl.UnlockAudio()
 	return nil
 }
 
 func callback(ptr unsafe.Pointer, stream *uint, length int) {
 	fmt.Printf("stream is %v, len is %v\n", stream, length)
+	fmt.Printf("ALIVEEEEEE\n")
+
+}
+
+func printAudio(as *sdl.AudioSpec) {
+	fmt.Printf("freq: %v\nformat: %v\nchannels: %v\nsamples: %v\nuserdata: %v\ncallback: %p	\n\n",
+		as.Freq, as.Format, as.Channels, as.Samples, as.UserData, as.Callback)
 }
 
 // func callback(ptr unsafe.Pointer, stream *uint, length int) {
